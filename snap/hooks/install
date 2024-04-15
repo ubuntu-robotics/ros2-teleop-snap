@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+. $SNAP/usr/bin/reset_config.sh
+
+if ! snapctl is-connected ros-humble; then
+  logger -t ${SNAP_NAME} "Plug 'ros-humble' isn't connected, please run: snap connect $SNAP_NAME:ros-humble <providing-snap>"
+fi
+
+for PLUG in hardware-observe joystick; do
+  if ! snapctl is-connected ${PLUG}; then
+    logger -t ${SNAP_NAME} "Plug '${PLUG}' isn't connected, please run: snap connect $SNAP_NAME:${PLUG} before running the 'joy' app."
+  fi
+done

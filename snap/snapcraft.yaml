@@ -1,0 +1,84 @@
+name: rosbot-xl-teleop
+version: '0.1'
+license: Apache-2.0
+summary: The rosbot-xl teleop snap
+description: |
+  The rosbot-xl teleop snap allows for teleoperating the robot
+  from either the keyboard, gamepad or leave it to the navigation stack.
+
+  The snap offers the possibility to teleoperate the robot from a joystick,
+
+    rosbot-xl-teleop.joy
+
+  This app launches both the gamepad driver as well as the joy teleop node.
+
+  The robot can also be teleoperated from a keyboard (e.g. SSH) with,
+
+    rosbot-xl-teleop.key
+
+  The snap makes use of a topic multiplexer to switch from one source to another.
+  Its input topic can be selected as,
+
+    rosbot-xl-teleop.mux-select <topic>
+
+  Note that when launching the joy or key app,
+  the appropriate topic is automatically selected.
+
+grade: stable
+confinement: strict
+base: core22
+
+contact: https://github.com/husarion/rosbot-xl-teleop-snap/issues
+issues: https://github.com/husarion/rosbot-xl-teleop-snap/issues
+website: https://husarion.com/
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+
+apps:
+  core:
+    command: ros2 run topic_tools mux cmd_vel joy_vel nav_vel key_vel web_vel
+    daemon: simple
+    install-mode: disable
+    plugs: [network, network-bind]
+    extensions: [ros2-humble-ros-base]
+
+  joy:
+    command: usr/bin/joy_launcher.sh
+    command-chain: [usr/bin/mux_select_joy_vel.sh]
+    environment:
+      LD_LIBRARY_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$LD_LIBRARY_PATH"
+    plugs: [hardware-observe, joystick, network, network-bind]
+    extensions: [ros2-humble-ros-base]
+
+  key:
+    command: usr/bin/key_launcher.sh
+    command-chain: [usr/bin/mux_select_key_vel.sh]
+    plugs: [network, network-bind]
+    extensions: [ros2-humble-ros-base]
+
+  mux-select:
+    command: usr/bin/mux_select.sh
+    completer: usr/bin/mux_completer.sh
+    plugs: [network, network-bind]
+    extensions: [ros2-humble-ros-base]
+
+  reset-config:
+    command: usr/bin/reset_config.sh
+
+parts:
+  ros2-teleop:
+    plugin: nil
+    stage-packages:
+      - ros-humble-teleop-twist-joy
+      - ros-humble-teleop-twist-keyboard
+      - ros-humble-topic-tools
+
+  # copy local scripts to the snap
+  local-files:
+    plugin: dump
+    source: snap/local/
+    organize:
+      '*.sh': usr/bin/
+      '*.yaml': usr/share/ros2-teleop/config/
