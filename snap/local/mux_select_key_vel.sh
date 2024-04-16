@@ -1,4 +1,6 @@
 #!/usr/bin/bash -e
 
-${SNAP}/usr/bin/mux_select.sh "key_vel"
+ROS2_TELEOP_KEY_VEL_TOPIC="$(snapctl get key-vel)"
+
+${SNAP}/usr/bin/mux_select.sh $ROS2_TELEOP_KEY_VEL_TOPIC
 exec $@

@@ -1,25 +1,40 @@
-name: rosbot-xl-teleop
+name: ros2-teleop
 version: '0.1'
 license: Apache-2.0
-summary: The rosbot-xl teleop snap
+summary: The ROS 2 teleop snap
 description: |
-  The rosbot-xl teleop snap allows for teleoperating the robot
+  The ROS 2 teleop snap allows for teleoperating a robot
   from either the keyboard, gamepad or leave it to the navigation stack.
 
   The snap offers the possibility to teleoperate the robot from a joystick,
 
-    rosbot-xl-teleop.joy
+    ros2-teleop.joy
 
   This app launches both the gamepad driver as well as the joy teleop node.
 
+  Optional parameters for the joystick application are:
+
+    joy-vel (string, default: 'joy_vel')
+    joy_dev (string, default: 'dev/input/js0')
+    joy_config (string, default: 'ps3')
+    config-filepath (string, default: '')
+
+    PS3 is the default joystick configuration. To run for another config the 
+    parameter joy-config can be set. In alternative, a config file can be used.
+    Enable custom joystick configuration with:
+    snap set ros2-teleop config-filepath="$SNAP_COMMON/config/joy_teleop.config.yaml"
+
   The robot can also be teleoperated from a keyboard (e.g. SSH) with,
 
-    rosbot-xl-teleop.key
+    ros2-teleop.key
+
+  Optional parameters for the keyboard application are:
+    key-vel (string, default: 'key_vel')
 
   The snap makes use of a topic multiplexer to switch from one source to another.
   Its input topic can be selected as,
 
-    rosbot-xl-teleop.mux-select <topic>
+    ros2-teleop.mux-select <topic>
 
   Note that when launching the joy or key app,
   the appropriate topic is automatically selected.
@@ -28,9 +43,8 @@ grade: stable
 confinement: strict
 base: core22
 
-contact: https://github.com/husarion/rosbot-xl-teleop-snap/issues
-issues: https://github.com/husarion/rosbot-xl-teleop-snap/issues
-website: https://husarion.com/
+contact: https://github.com/husarion/ros2-teleop-snap/issues
+issues: https://github.com/husarion/ros2-teleop-snap/issues
 
 architectures:
   - build-on: amd64
