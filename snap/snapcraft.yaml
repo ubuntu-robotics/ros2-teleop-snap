@@ -14,14 +14,26 @@ description: |
 
   Optional parameters for the joystick application are:
 
-    joy-vel (string, default: 'joy_vel')
-    joy_dev (string, default: 'dev/input/js0')
-    joy_config (string, default: 'ps3')
-    config-filepath (string, default: '')
+    - joy-vel (string, default: 'joy_vel')
+    - joy-dev (string, default: 'dev/input/js0')
+    - joy-config (string, default: '')
+    - config-filepath (string, default: '')
+    - publish-stamped-twist (bool, default: false)
 
-    PS3 is the default joystick configuration. To run for another config the 
-    parameter joy-config can be set. In alternative, a config file can be used.
-    Enable custom joystick configuration with:
+    The upstream package offers some default joystick configurations.
+    Those can be set up with the joy-config parameter as follows:
+
+    snap set joy-confing="ps3"
+
+    In alternative, a custom configuration file can be used. The file can be provided
+    by means of a URL. In such case, the snap will download the file and
+    place it in `$SNAP_COMMON/config/joy_teleop.config.yaml`.
+    To configure the config-filepath to a URL:
+
+    snap set ros2-teleop config-filepath="https://raw.githubusercontent.com/robot-repo/joy_teleop.config.yaml"
+
+    Otherwise to configure the config-filepath to a local configuration file:
+
     snap set ros2-teleop config-filepath="$SNAP_COMMON/config/joy_teleop.config.yaml"
 
   The robot can also be teleoperated from a keyboard (e.g. SSH) with,
@@ -36,6 +48,12 @@ description: |
 
     ros2-teleop.mux-select <topic>
 
+  The topics names can also be configured with snap parameters:
+
+    - cmd-vel (string, default: "cmd_vel")
+    - nav-vel (string, default: "nav_vel")
+    - web-vel (string, defautl: "web_vel")
+
   Note that when launching the joy or key app,
   the appropriate topic is automatically selected.
 
@@ -43,16 +61,20 @@ grade: stable
 confinement: strict
 base: core22
 
-contact: https://github.com/husarion/ros2-teleop-snap/issues
-issues: https://github.com/husarion/ros2-teleop-snap/issues
+contact: https://github.com/ubuntu-robotics/ros2-teleop-snap/issues
+issues: https://github.com/ubuntu-robotics/ros2-teleop-snap/issues
 
 architectures:
   - build-on: amd64
   - build-on: arm64
 
+hooks:
+  configure:
+    plugs: [network]
+  
 apps:
   core:
-    command: ros2 run topic_tools mux cmd_vel joy_vel nav_vel key_vel web_vel
+    command: usr/bin/topic_tools_mux.sh
     daemon: simple
     install-mode: disable
     plugs: [network, network-bind]
@@ -61,6 +83,8 @@ apps:
   joy:
     command: usr/bin/joy_launcher.sh
     command-chain: [usr/bin/mux_select_joy_vel.sh]
+    daemon: simple
+    install-mode: disable
     environment:
       LD_LIBRARY_PATH: "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$LD_LIBRARY_PATH"
     plugs: [hardware-observe, joystick, network, network-bind]
@@ -69,6 +93,8 @@ apps:
   key:
     command: usr/bin/key_launcher.sh
     command-chain: [usr/bin/mux_select_key_vel.sh]
+    daemon: simple
+    install-mode: disable
     plugs: [network, network-bind]
     extensions: [ros2-humble-ros-base]
 
@@ -85,6 +111,8 @@ parts:
   ros2-teleop:
     plugin: nil
     stage-packages:
+      - wget
+      - libssl-dev
       - ros-humble-teleop-twist-joy
       - ros-humble-teleop-twist-keyboard
       - ros-humble-topic-tools

@@ -12,7 +12,30 @@ done
 ROS2_TELEOP_JOY_VEL_TOPIC="$(snapctl get joy-vel)"
 ROS2_TELEOP_JOY_DEV="$(snapctl get joy-dev)"
 ROS2_TELEOP_JOY_CONFIG="$(snapctl get joy-config)"
-ROS2_TELEOP_JOY_PARAM_FILE="$(snapctl get config-filepath)"
+ROS2_TELEOP_JOY_PARAM_PATH="$(snapctl get config-filepath)"
+
+is_url() {
+    local url="$1"
+    if [[ "$url" =~ ^(https?|http):// ]]; then
+        return 0
+    fi
+    return 1
+}
+
+if [ -z "$ROS2_TELEOP_JOY_CONFIG" ] && [ -z "$ROS2_TELEOP_JOY_PARAM_PATH" ]; then
+    echo "No joystick configuration specified. Specify a joystick configuration to start the node."
+    exit 1
+fi
+
+if is_url "$ROS2_TELEOP_JOY_PARAM_PATH"; then
+    SYSTEM_WGETRC=$SNAP/etc/wgetrc wget "$ROS2_TELEOP_JOY_PARAM_PATH" -O $SNAP_COMMON/config/joy_teleop.config.yaml
+    if [ $? -eq 0 ]; then
+        echo "Config file downloaded successfully."
+        ROS2_TELEOP_JOY_PARAM_FILE="$SNAP_COMMON/config/joy_teleop.config.yaml"
+    else
+        echo "Failed to download config file."
+    fi
+fi
 
 if [[ -z "${ROS2_TELEOP_JOY_PARAM_FILE}" ]]; then
   ROS2_TELEOP_JOY_CONFIG_ARG="joy_config:=${ROS2_TELEOP_JOY_CONFIG}"

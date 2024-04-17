@@ -15,10 +15,15 @@ done
 # joystick parameters
 snapctl set joy-vel="joy_vel"
 snapctl set joy-dev="/dev/input/js0"
-snapctl set joy-config="ps3"
+snapctl set joy-config!
 # Enable custom joy configuration with
 # snap set ros2-teleop config-filepath="$SNAP_COMMON/config/joy_teleop.config.yaml"
 snapctl set config-filepath!
 
 # keyboard parameters
 snapctl set key-vel="key_vel"
+
+# topic parameters
+snapctl set cmd-vel="cmd_vel"
+snapctl set nav-vel="nav_vel"
+snapctl set web-vel="web_vel"
