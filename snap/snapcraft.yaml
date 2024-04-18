@@ -71,7 +71,7 @@ architectures:
 hooks:
   configure:
     plugs: [network]
-  
+
 apps:
   core:
     command: usr/bin/topic_tools_mux.sh
@@ -93,8 +93,6 @@ apps:
   key:
     command: usr/bin/key_launcher.sh
     command-chain: [usr/bin/mux_select_key_vel.sh]
-    daemon: simple
-    install-mode: disable
     plugs: [network, network-bind]
     extensions: [ros2-humble-ros-base]
 

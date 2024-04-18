@@ -1,12 +1,3 @@
-# joy_node:
-#   ros__parameters:
-#     device_id: 4
-#     device_name: "''"
-#     deadzone: 0.5
-#     autorepeat_rate: 20.0
-#     sticky_buttons: false
-#     coalesce_interval_ms: 1
-
 teleop_twist_joy_node:
   ros__parameters:
     axis_linear:
