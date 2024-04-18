@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-SUPPORTED_JOY_CONFIGS=("ps3" "xbox" "ps3-holonomic" "xd3" "atk3")
+TELEOP_JOY_CONFIG_PATH="$SNAP/opt/ros/humble/share/teleop_twist_joy/config"
+SUPPORTED_JOY_CONFIGS=(files=$(basename -a "${TELEOP_JOY_CONFIG_PATH}"/*.config.yaml | sed 's/\.config\.yaml$//'))
 JOY_CONFIG="$(snapctl get joy-config)"
 
 if [[ ! "${SUPPORTED_JOY_CONFIGS[@]}" =~ "${JOY_CONFIG}" ]]; then
@@ -11,6 +12,11 @@ fi
 
 
 CONFIG="$(snapctl get config-filepath)"
+
+if [[ -z "${CONFIG}" ]]; then
+    exit 0
+fi
+
 if [[ "${CONFIG}" =~ ^(https?|http):// ]]; then
     echo "config-filepath is a URL: ${CONFIG}"
     if ! SYSTEM_WGETRC=$SNAP/etc/wgetrc wget -q --spider "${CONFIG}"; then
