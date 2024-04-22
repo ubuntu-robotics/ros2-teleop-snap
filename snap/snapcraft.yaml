@@ -20,14 +20,14 @@ description: |
     - config-filepath (string, default: '')
     - publish-stamped-twist (bool, default: false)
 
-    At least one between the `joy-config` and the `config-filepath` parameters must be set for the application to run.
+    At least one between the joy-config and the config-filepath parameters must be set for the application to run.
 
-    In case both `joy-config` and `config-filepath`` are set, the configuration file will take precedence.
+    In case both joy-config and config-filepath are set, the configuration file will take precedence.
 
     The upstream package offers some default joystick configurations.
     Those can be set up with the joy-config parameter as follows:
 
-    snap set joy-confing="ps3"
+    snap set joy-config="ps3"
 
     In alternative, a custom configuration file can be used. The file can be provided
     by means of a URL. In such case, the snap will download the file and
