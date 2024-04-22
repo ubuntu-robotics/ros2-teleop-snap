@@ -4,6 +4,10 @@ TELEOP_JOY_CONFIG_PATH="$SNAP/opt/ros/humble/share/teleop_twist_joy/config"
 SUPPORTED_JOY_CONFIGS=(files=$(basename -a "${TELEOP_JOY_CONFIG_PATH}"/*.config.yaml | sed 's/\.config\.yaml$//'))
 JOY_CONFIG="$(snapctl get joy-config)"
 
+if [[ -z "${JOY_CONFIG}" ]]; then
+    exit 0
+fi
+
 if [[ ! "${SUPPORTED_JOY_CONFIGS[@]}" =~ "${JOY_CONFIG}" ]]; then
     >&2 echo "'${JOY_CONFIG}' is not a supported value for joy-config. Possible values are: ${SUPPORTED_JOY_CONFIGS[*]}."
     logger -t ${SNAP_NAME} "'${JOY_CONFIG}' is not a supported value for joy-config. Possible values are: ${SUPPORTED_JOY_CONFIGS[*]}." 
