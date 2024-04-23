@@ -1,0 +1,29 @@
+#!/bin/sh -e
+
+. $SNAP/usr/bin/reset_config.sh
+
+if ! snapctl is-connected ros-humble-ros-base; then
+  logger -t ${SNAP_NAME} "Plug 'ros-humble-ros-base' isn't connected, please run: snap connect $SNAP_NAME:ros-humble-ros-base <providing-snap>"
+fi
+
+for PLUG in hardware-observe joystick; do
+  if ! snapctl is-connected ${PLUG}; then
+    logger -t ${SNAP_NAME} "Plug '${PLUG}' isn't connected, please run: snap connect $SNAP_NAME:${PLUG} before running the 'joy' app."
+  fi
+done
+
+# joystick parameters
+snapctl set joy-vel="joy_vel"
+snapctl set joy-dev="/dev/input/js0"
+snapctl set joy-config!
+# Enable custom joy configuration with
+# snap set ros2-teleop config-filepath="$SNAP_COMMON/config/joy_teleop.config.yaml"
+snapctl set config-filepath!
+
+# keyboard parameters
+snapctl set key-vel="key_vel"
+
+# topic parameters
+snapctl set cmd-vel="cmd_vel"
+snapctl set nav-vel="nav_vel"
+snapctl set web-vel="web_vel"
