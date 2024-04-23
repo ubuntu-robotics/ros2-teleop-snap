@@ -4,34 +4,32 @@ TELEOP_JOY_CONFIG_PATH="$SNAP/opt/ros/humble/share/teleop_twist_joy/config"
 SUPPORTED_JOY_CONFIGS=(files=$(basename -a "${TELEOP_JOY_CONFIG_PATH}"/*.config.yaml | sed 's/\.config\.yaml$//'))
 JOY_CONFIG="$(snapctl get joy-config)"
 
-if [[ ! "${SUPPORTED_JOY_CONFIGS[@]}" =~ "${JOY_CONFIG}" ]]; then
-    >&2 echo "'${JOY_CONFIG}' is not a supported value for joy-config. Possible values are: ${SUPPORTED_JOY_CONFIGS[*]}."
-    logger -t ${SNAP_NAME} "'${JOY_CONFIG}' is not a supported value for joy-config. Possible values are: ${SUPPORTED_JOY_CONFIGS[*]}." 
-    exit 1
+if [ -n "${JOY_CONFIG}"]; then
+    if [[ ! "${SUPPORTED_JOY_CONFIGS[@]}" =~ "${JOY_CONFIG}" ]]; then
+        >&2 echo "'${JOY_CONFIG}' is not a supported value for joy-config. Possible values are: ${SUPPORTED_JOY_CONFIGS[*]}."
+        logger -t ${SNAP_NAME} "'${JOY_CONFIG}' is not a supported value for joy-config. Possible values are: ${SUPPORTED_JOY_CONFIGS[*]}."
+        exit 1
+    fi
 fi
 
 
 CONFIG="$(snapctl get config-filepath)"
-
-if [[ -z "${CONFIG}" ]]; then
-    exit 0
-fi
-
-if [[ "${CONFIG}" =~ ^(https?|http):// ]]; then
-    echo "config-filepath is a URL: ${CONFIG}"
-    if ! SYSTEM_WGETRC=$SNAP/etc/wgetrc wget -q --spider "${CONFIG}"; then
-        >&2 echo "URL is not valid: ${CONFIG}"
-        logger -t ${SNAP_NAME} "URL is not valid: ${CONFIG}"
-        exit 1
-    fi
-else
-    if ! [[ -r "${CONFIG}" && -f "${CONFIG}" ]]; then
-        >&2 echo "'${CONFIG}' is not a supported value for config-filepath."
-        logger -t ${SNAP_NAME} "'${CONFIG}' is not a supported value for config-filepath."
-        exit 1
+if [ -n "${CONFIG}" ]; then
+    if [[ "${CONFIG}" =~ ^(https?|http):// ]]; then
+        echo "config-filepath is a URL: ${CONFIG}"
+        if ! SYSTEM_WGETRC=$SNAP/etc/wgetrc wget -q --spider "${CONFIG}"; then
+            >&2 echo "URL is not valid: ${CONFIG}"
+            logger -t ${SNAP_NAME} "URL is not valid: ${CONFIG}"
+            exit 1
+        fi
+    else
+        if ! [[ -r "${CONFIG}" && -f "${CONFIG}" ]]; then
+            >&2 echo "'${CONFIG}' is not a supported value for config-filepath."
+            logger -t ${SNAP_NAME} "'${CONFIG}' is not a supported value for config-filepath."
+            exit 1
+        fi
     fi
 fi
-
 
 JOY_DEV="$(snapctl get joy-dev)"
 if [[ ! "${JOY_DEV}" =~ ^/dev/input/js* ]]; then

@@ -22,25 +22,34 @@ is_url() {
     return 1
 }
 
-if [ -z "$ROS2_TELEOP_JOY_CONFIG" ] && [ -z "$ROS2_TELEOP_JOY_PARAM_PATH" ]; then
+if [ -z "${ROS2_TELEOP_JOY_CONFIG}" ] && [ -z "${ROS2_TELEOP_JOY_PARAM_PATH}" ]; then
     echo "No joystick configuration specified. Specify a joystick configuration to start the node."
     exit 1
 fi
 
-if is_url "$ROS2_TELEOP_JOY_PARAM_PATH"; then
-    SYSTEM_WGETRC=$SNAP/etc/wgetrc wget "$ROS2_TELEOP_JOY_PARAM_PATH" -O $SNAP_COMMON/config/joy_teleop.config.yaml
+CONFIG_JOY_BASE_PATH=$SNAP_COMMON/config/joy_teleop.config.yaml
+
+if is_url "${ROS2_TELEOP_JOY_PARAM_PATH}"; then
+    SYSTEM_WGETRC=$SNAP/etc/wgetrc wget "${ROS2_TELEOP_JOY_PARAM_PATH}" -O "${CONFIG_JOY_BASE_PATH}"
     if [ $? -eq 0 ]; then
         echo "Config file downloaded successfully."
-        ROS2_TELEOP_JOY_PARAM_FILE="$SNAP_COMMON/config/joy_teleop.config.yaml"
+        ROS2_TELEOP_JOY_PARAM_PATH="${CONFIG_JOY_BASE_PATH}"
     else
-        echo "Failed to download config file."
+        echo "Failed to download config file. Checking if a file already exists:"
+        if [[ -n "${CONFIG_JOY_BASE_PATH}" ]]; then
+          echo "Found previously downloaded config file"
+          ROS2_TELEOP_JOY_PARAM_PATH="${CONFIG_JOY_BASE_PATH}"
+        else
+          echo "Previous configuration file not found, could not launch joystick"
+          exit 1
+        fi
     fi
 fi
 
-if [[ -z "${ROS2_TELEOP_JOY_PARAM_FILE}" ]]; then
+if [[ -z "${ROS2_TELEOP_JOY_PARAM_PATH}" ]]; then
   ROS2_TELEOP_JOY_CONFIG_ARG="joy_config:=${ROS2_TELEOP_JOY_CONFIG}"
 else
-  ROS2_TELEOP_JOY_CONFIG_ARG="config_filepath:=${ROS2_TELEOP_JOY_PARAM_FILE}"
+  ROS2_TELEOP_JOY_CONFIG_ARG="config_filepath:=${ROS2_TELEOP_JOY_PARAM_PATH}"
 fi
 
 ros2 launch teleop_twist_joy teleop-launch.py \

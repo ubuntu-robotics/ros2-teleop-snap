@@ -15,20 +15,10 @@ on:
         default: ''
 
 jobs:
-  get-architectures:
-    name: 🖥 Get snap architectures
-    runs-on: ubuntu-latest
-    outputs:
-      architectures: ${{ steps.get-architectures.outputs.architectures }}
-      architectures-list: ${{ steps.get-architectures.outputs.architectures-list }}
-    steps:
-      - name: 🖥 Get snap architectures
-        id: get-architectures
-        uses: snapcrafters/ci/get-architectures@main
   snap:
     strategy:
       matrix:
-        architecture: ${{ fromJSON(needs.get-architectures.outputs.architectures-list) }}
+        architecture: [amd64, arm64]
     uses: ubuntu-robotics/snap_workflows/.github/workflows/snap.yaml@feat/add-arm-builds
     secrets:
       store-login: ${{ secrets.STORE_LOGIN }}
