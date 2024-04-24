@@ -76,6 +76,7 @@ jobs:
     uses: ubuntu-robotics/snap_workflows/.github/workflows/snap-arm.yaml@feat/add-arm-builds
     secrets:
       store-login: ${{ secrets.STORE_LOGIN }}
+      launchpad-creds: ${{ secrets.LP_CREDS }}
     with:
       branch-name: ${{ inputs.branch-name == '' && github.ref || inputs.branch-name }}
       snap-name: ros2-teleop
