@@ -59,15 +59,15 @@ Therefore a configuration update upstream will be applied with the application r
 
 Otherwise to configure the config-filepath to a local configuration file:
 
-`snap set ros2-teleop config-filepath="$SNAP_COMMON/config/joy_teleop.config.yaml"`
+`snap set ros2-teleop config-filepath="/var/snap/ros2-teleop/common/config/joy_teleop.config.yaml"`
 
 The local configuration should be at a path accessible to the snap such as $SNAP_COMMON.
 
 ### Keyboard
 
-The robot can also be teleoperated from a keyboard (e.g. SSH) with,
+The robot can also be teleoperated from a keyboard (e.g. SSH) by launching the application with,
 
-`snap start ros2-teleop.key`
+`ros2-teleop.key`
 
 ### Mux
 

@@ -6,9 +6,9 @@ description: |
   The ROS 2 teleop snap allows for teleoperating a robot
   from either the keyboard, gamepad or leave it to the navigation stack.
 
-  The snap offers the possibility to teleoperate the robot from a joystick,
+  The snap offers the possibility to teleoperate the robot from a joystick with:
 
-    ros2-teleop.joy
+    snap start ros2-teleop.joy
 
   This app launches both the gamepad driver as well as the joy teleop node.
 
@@ -42,11 +42,11 @@ description: |
 
     Otherwise to configure the config-filepath to a local configuration file:
 
-    snap set ros2-teleop config-filepath="$SNAP_COMMON/config/joy_teleop.config.yaml"
+    snap set ros2-teleop config-filepath="/var/snap/ros2-teleop/common/config/joy_teleop.config.yaml"
 
     The local configuration should be at a path accessible to the snap such as $SNAP_COMMON.
 
-  The robot can also be teleoperated from a keyboard (e.g. SSH) with,
+  The robot can also be teleoperated from a keyboard (e.g. SSH) by launching the application with:
 
     ros2-teleop.key
 
